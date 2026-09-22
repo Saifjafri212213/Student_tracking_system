@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeRank &middot; College CP Platform & Doubt-Solving Hub</title>
+  <meta name="description" content="College Competitive Programming Platform with isolated leaderboards for LeetCode, Codeforces, and CodeChef and Markdown Doubt-Solving Forum.">
+
+  <!-- 1. Bulma CSS Framework via CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
+
+  <!-- 2. Custom Stylesheet (Overriding Bulma Defaults & Design System) -->
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- 2. Prism.js Dark Theme CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+
+  <!-- 3. Marked.js & Prism.js CDN Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+  <!-- Early Modal & UI Helper Script for Instant Click Response -->
+  <script>
+    window.openAuthModal = function(defaultTab = 'register') {
+      window.location.href = defaultTab === 'login' ? 'auth.html?tab=login' : 'auth.html#register';
+    };
+    window.closeAuthModal = function() {
+      const modal = document.getElementById('authModal');
+      if (modal) modal.classList.remove('is-active');
+    };
+    window.switchAuthTab = function(tabName) {
+      const tabReg = document.getElementById('tabRegister');
+      const tabLog = document.getElementById('tabLogin');
+      const formReg = document.getElementById('registerForm');
+      const formLog = document.getElementById('loginForm');
+      if (tabName === 'login') {
+        if (tabLog) tabLog.classList.add('is-active');
+        if (tabReg) tabReg.classList.remove('is-active');
+        if (formLog) formLog.classList.remove('is-hidden');
+        if (formReg) formReg.classList.add('is-hidden');
+      } else {
+        if (tabReg) tabReg.classList.add('is-active');
+        if (tabLog) tabLog.classList.remove('is-active');
+        if (formReg) formReg.classList.remove('is-hidden');
+        if (formLog) formLog.classList.add('is-hidden');
+      }
+    };
+    window.openMyProfileModal = function() {
+      const modal = document.getElementById('myProfileModal');
+      if (modal) modal.classList.add('is-active');
+    };
+    window.closeMyProfileModal = function() {
+      const modal = document.getElementById('myProfileModal');
+      if (modal) modal.classList.remove('is-active');
+    };
+
+    // Global Click Delegation for Modals & Navigation
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.addEventListener('click', function(e) {
+        const target = e.target;
+        if (target.closest('#btnOpenAuthModal') || target.closest('.js-open-auth-modal')) {
+          e.preventDefault();
+          window.openAuthModal('register');
+        } else if (target.closest('#btnCloseAuthModal') || target.closest('#modalBg')) {
+          e.preventDefault();
+          window.closeAuthModal();
+        } else if (target.closest('#tabRegister')) {
+          e.preventDefault();
+          window.switchAuthTab('register');
+        } else if (target.closest('#tabLogin')) {
+          e.preventDefault();
+          window.switchAuthTab('login');
+        } else if (target.closest('#btnCloseProfileModal') || target.closest('#modalProfileBg')) {
+          e.preventDefault();
+          window.closeMyProfileModal();
+        } else if (target.closest('#btnOpenEditHandlesModal') || target.closest('#btnOpenProfileModal')) {
+          e.preventDefault();
+          window.openMyProfileModal();
+        }
+      });
+    });
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background-color: #f8fafc;
+    }
+    h1, h2, h3, .title, .navbar-brand {
+      font-family: 'Outfit', sans-serif;
+    }
+    pre, code, kbd, .textarea {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .rank-1 { background-color: rgba(255, 215, 0, 0.12) !important; font-weight: bold; }
+    .rank-2 { background-color: rgba(192, 192, 192, 0.12) !important; font-weight: bold; }
+    .rank-3 { background-color: rgba(205, 127, 50, 0.12) !important; font-weight: bold; }
+    .rank-badge { display: inline-block; width: 28px; height: 28px; line-height: 28px; text-align: center; border-radius: 50%; font-weight: bold; }
+    .badge-gold { background: #ffd700; color: #5a4500; }
+    .badge-silver { background: #c0c0c0; color: #333333; }
+    .badge-bronze { background: #cd7f32; color: #ffffff; }
+    .doubt-card-item {
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .doubt-card-item:hover {
+      background-color: #fbfcfe;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+  </style>
+</head>
+<body class="has-background-light">
+
+  <!-- ========================================== -->
+  <!-- MAIN NAVIGATION BAR                        -->
+  <!-- ========================================== -->
+  <nav class="navbar is-white has-shadow custom-glass-navbar" role="navigation" aria-label="main navigation">
+    <div class="container is-max-widescreen">
+      <div class="navbar-brand">
+        <a class="navbar-item has-text-weight-bold is-size-4 has-text-primary" href="index.html">
+          <span class="icon mr-2"><i class="fas fa-terminal"></i></span>
+          <span>CodeRank</span>
+          <span class="tag is-primary is-light is-rounded ml-2 is-size-7">Campus Hub</span>
+        </a>
+      </div>
+
+      <div class="navbar-menu is-active">
+        <div class="navbar-start">
+          <a class="navbar-item is-tab is-active" id="navTabLeaderboard" href="#leaderboard">
+            <span class="icon is-small mr-1"><i class="fas fa-trophy"></i></span>
+            <span>Leaderboards</span>
+          </a>
+          <a class="navbar-item is-tab" id="navTabForum" href="#forum">
+            <span class="icon is-small mr-1"><i class="fas fa-comments"></i></span>
+            <span>Doubt Forum</span>
+          </a>
+          <a class="navbar-item is-tab" id="navTabAskQuestion" href="#ask">
+            <span class="icon is-small mr-1 has-text-primary"><i class="fas fa-plus-circle"></i></span>
+            <span>Ask a Question</span>
+          </a>
+        </div>
+
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <div class="buttons" id="authNavButtons">
+              <a href="auth.html#register" class="button is-primary is-outlined js-open-auth-modal" id="btnOpenAuthModal">
+                <span class="icon"><i class="fas fa-user-circle"></i></span>
+                <span>Sign In / Register</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Global Alerts -->
+  <div class="container is-max-widescreen mt-4">
+    <div id="globalNotification" class="notification is-hidden">
+      <button class="delete" id="closeNotificationBtn"></button>
+      <span id="globalNotificationText"></span>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODULE 2: PLATFORM-ISOLATED LEADERBOARDS   -->
+  <!-- ========================================== -->
+  <section id="leaderboardSection" class="section py-5">
+    <div class="container is-max-widescreen">
+      
+      <!-- Top Section Header -->
+      <div class="level mb-4">
+        <div class="level-left">
+          <div>
+            <h1 class="title is-3 has-text-weight-bold mb-1">Campus Coding Standings</h1>
+            <p class="subtitle is-6 has-text-grey">Track student ranks, platform contest ratings, and total problems solved.</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <button class="button is-small is-light" id="btnRefreshLeaderboard" title="Refresh standings">
+            <span class="icon"><i class="fas fa-sync-alt"></i></span>
+            <span>Sync Stats</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Isolated Platform Tabs (Module 2) -->
+      <div class="tabs is-boxed is-medium mb-4">
+        <ul id="platformTabsList">
+          <li class="is-active" data-platform="leetcode">
+            <a>
+              <span class="icon is-small mr-2 has-text-warning"><i class="fas fa-code"></i></span>
+              <span>LeetCode</span>
+            </a>
+          </li>
+          <li data-platform="codeforces">
+            <a>
+              <span class="icon is-small mr-2 has-text-info"><i class="fas fa-chart-line"></i></span>
+              <span>Codeforces</span>
+            </a>
+          </li>
+          <li data-platform="codechef">
+            <a>
+              <span class="icon is-small mr-2" style="color: #b07d4b;"><i class="fas fa-utensils"></i></span>
+              <span>CodeChef</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Secondary Controls: Academic Year & Metric Toggle -->
+      <div class="level mb-4 is-mobile">
+        <div class="level-left">
+          <div class="level-item">
+            <div class="field has-addons">
+              <div class="control">
+                <span class="button is-static"><span class="icon is-small"><i class="fas fa-graduation-cap"></i></span></span>
+              </div>
+              <div class="control">
+                <div class="select">
+                  <select id="selectAcademicYear">
+                    <option value="ALL">All Academic Years</option>
+                    <option value="1">1st Year (Freshmen)</option>
+                    <option value="2">2nd Year (Sophomores)</option>
+                    <option value="3">3rd Year (Juniors)</option>
+                    <option value="4">4th Year (Seniors)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="level-right">
+          <div class="level-item">
+            <div class="buttons has-addons">
+              <button class="button is-primary is-selected" id="btnMetricRating">
+                <span class="icon is-small mr-1"><i class="fas fa-star"></i></span>
+                <span>Contest Rating</span>
+              </button>
+              <button class="button" id="btnMetricSolved">
+                <span class="icon is-small mr-1"><i class="fas fa-check-circle"></i></span>
+                <span>Total Solved</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logged In Student Standing Spotlight Banner -->
+      <div id="userStandingBanner" class="box mb-4 is-hidden" style="background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%); border-left: 5px solid #485fc7;">
+        <div class="level is-mobile mb-0">
+          <div class="level-left">
+            <div>
+              <p class="heading has-text-weight-bold has-text-grey-dark mb-1">
+                <span class="icon is-small mr-1 has-text-link"><i class="fas fa-id-badge"></i></span>
+                Your Standing on <span id="bannerPlatformName" class="has-text-weight-bold has-text-link">LEETCODE</span>
+              </p>
+              <p class="title is-5 mb-0 has-text-dark">
+                <span id="bannerUserName">Student</span>
+                <span class="tag is-primary is-light ml-2" id="bannerUserYear">Year 3</span>
+                <span class="tag is-info is-light ml-1" id="bannerUserRank">Rank #—</span>
+              </p>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="is-flex is-align-items-center">
+              <div class="has-text-right mr-3">
+                <span class="heading has-text-grey mb-1" id="bannerMetricTitle">Contest Rating</span>
+                <strong class="title is-4 has-text-link" id="bannerMetricValue">—</strong>
+              </div>
+              <button class="button is-small is-link is-outlined" id="btnOpenEditHandlesModal" title="Edit your CP handles & fetch live stats">
+                <span class="icon is-small"><i class="fas fa-sync-alt"></i></span>
+                <span>Update Handles</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Platform-Isolated Leaderboard Table -->
+      <div class="box p-0" style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 10px;">
+        <table class="table is-striped is-hoverable is-fullwidth mb-0" id="leaderboardTable">
+          <thead>
+            <tr class="has-background-white-bis">
+              <th class="has-text-centered" style="width: 80px;">Rank</th>
+              <th>Student Name</th>
+              <th>Roll Number</th>
+              <th>Cohort</th>
+              <th>Branch</th>
+              <th>Handle</th>
+              <th class="has-text-right" id="thMetricHeader">Contest Rating</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardTableBody">
+            <tr>
+              <td colspan="7" class="has-text-centered py-5 has-text-grey">
+                <span class="icon is-small mr-2"><i class="fas fa-spinner fa-spin"></i></span>
+                <span>Loading campus standings...</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- MODULE 3: MARKDOWN DOUBT-SOLVING FORUM     -->
+  <!-- ========================================== -->
+  <section id="forumSection" class="section py-5 is-hidden">
+    <div class="container is-max-widescreen">
+      
+      <div class="level mb-4">
+        <div class="level-left">
+          <div>
+            <h1 class="title is-3 has-text-weight-bold mb-1">Campus Doubt Resolution Forum</h1>
+            <p class="subtitle is-6 has-text-grey">Ask programming questions, embed C++/Python snippets, and collaborate with peers.</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <a href="#ask" class="button is-primary is-light has-text-weight-semibold" id="btnScrollToAskEditor">
+            <span class="icon is-small mr-1"><i class="fas fa-plus"></i></span>
+            <span>Ask New Doubt</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Split-Screen Layout (Module 3) -->
+      <div class="columns is-desktop is-variable is-5 mb-5" id="askEditorCard">
+        
+        <!-- Left Column: Form Editor -->
+        <div class="column is-half">
+          <div class="box p-5 shadow-sm" style="border: 1px solid #e2e8f0; border-radius: 12px; height: 100%;">
+            <h2 class="title is-5 mb-4 pb-2 has-text-grey-dark" style="border-bottom: 1px solid #edf2f7;">
+              <span class="icon is-small mr-1 has-text-info"><i class="fas fa-pen"></i></span> Post a Doubt
+            </h2>
+
+            <form id="askDoubtForm" novalidate>
+              
+              <!-- Title -->
+              <div class="field mb-3">
+                <label class="label" for="doubtTitleInput">Question Title <span class="has-text-danger">*</span></label>
+                <div class="control has-icons-left">
+                  <input class="input is-large" type="text" id="doubtTitleInput" placeholder="e.g. TLE in Codeforces 1920B (Greedy Approach)" required />
+                  <span class="icon is-medium is-left"><i class="fas fa-heading"></i></span>
+                </div>
+              </div>
+
+              <!-- Tags -->
+              <div class="field mb-3">
+                <label class="label" for="doubtTagInput">Tags <span class="has-text-danger">*</span></label>
+                <div class="control has-icons-left">
+                  <input class="input" type="text" id="doubtTagInput" placeholder="Type a tag (e.g. DP, C++, LeetCode) and press Enter" />
+                  <span class="icon is-small is-left"><i class="fas fa-tags"></i></span>
+                </div>
+                <div class="tags mt-2" id="doubtTagsContainer"></div>
+              </div>
+
+              <!-- Markdown Body -->
+              <div class="field mb-4">
+                <div class="level is-mobile mb-1">
+                  <div class="level-left">
+                    <label class="label mb-0" for="doubtBodyInput">Details & Code (Markdown) <span class="has-text-danger">*</span></label>
+                  </div>
+                  <div class="level-right">
+                    <div class="buttons are-small mb-0">
+                      <button type="button" class="button is-light is-small" id="btnInsertCpp"><code>+ C++</code></button>
+                      <button type="button" class="button is-light is-small" id="btnInsertPy"><code>+ Python</code></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="control">
+                  <textarea class="textarea has-fixed-size" id="doubtBodyInput" rows="11" placeholder="Describe the doubt, test cases, and embed code:
+
+### Approach
+I am trying to solve this using dynamic programming...
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    // Solution here
+    return 0;
+}
+```" required></textarea>
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <div class="field">
+                <button type="submit" class="button is-primary is-fullwidth is-medium has-text-weight-semibold" id="btnSubmitDoubt">
+                  <span class="icon"><i class="fas fa-paper-plane"></i></span>
+                  <span>Post Doubt to Forum</span>
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+        <!-- Right Column: Live Markdown & Code Preview -->
+        <div class="column is-half">
+          <div class="card" style="border: 1px solid #e2e8f0; border-radius: 12px; height: 100%; display: flex; flex-direction: column;">
+            
+            <header class="card-header has-background-white-bis">
+              <p class="card-header-title has-text-grey-dark">
+                <span class="icon mr-2 has-text-primary"><i class="fas fa-eye"></i></span>
+                <span>Live Forum Post Preview</span>
+              </p>
+              <div class="card-header-icon">
+                <span class="tag is-success is-light is-rounded">Real-Time</span>
+              </div>
+            </header>
+
+            <div class="card-content flex-grow-1 p-5" style="display: flex; flex-direction: column; overflow-y: auto;">
+              <h3 class="title is-4 mb-2 has-text-dark" id="previewTitle">
+                <span class="has-text-grey-light is-italic">Title will preview here...</span>
+              </h3>
+              
+              <div class="tags mb-3" id="previewTags"></div>
+
+              <div class="content flex-grow-1" id="previewContent" style="overflow-y: auto; max-height: 460px;">
+                <p class="has-text-grey-light is-italic">
+                  Type your problem description and code blocks on the left to see live Markdown and syntax-highlighted code here.
+                </p>
+              </div>
+            </div>
+
+            <footer class="card-footer has-background-white-bis px-4 py-2">
+              <span class="is-size-7 has-text-grey">
+                <span class="icon is-small mr-1 has-text-info"><i class="fas fa-info-circle"></i></span>
+                Syntax highlighting active for <code>C++</code> and <code>Python</code>.
+              </span>
+            </footer>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Published Doubts Feed -->
+      <div class="box p-5" style="border: 1px solid #e2e8f0; border-radius: 12px;">
+        <div class="level is-mobile mb-4 pb-2" style="border-bottom: 1px solid #edf2f7;">
+          <div class="level-left">
+            <h2 class="title is-5 mb-0">
+              <span class="icon mr-2 has-text-info"><i class="fas fa-list"></i></span>
+              <span>Recent Doubts & Discussions</span>
+            </h2>
+          </div>
+          <div class="level-right">
+            <button class="button is-small is-light" id="btnRefreshDoubts">
+              <span class="icon"><i class="fas fa-sync-alt"></i></span>
+              <span>Refresh Feed</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="doubtsFeedContainer">
+          <p class="has-text-grey py-3 has-text-centered">Loading discussions...</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- MODAL: VIEW DOUBT THREAD & ANSWERS         -->
+  <!-- ========================================== -->
+  <div class="modal" id="viewDoubtModal">
+    <div class="modal-background" id="modalViewDoubtBg"></div>
+    <div class="modal-card" style="max-width: 800px; width: 95%;">
+      <header class="modal-card-head">
+        <p class="modal-card-title has-text-weight-bold" id="modalDoubtTitleHeader">Discussion Thread</p>
+        <button class="delete" aria-label="close" id="btnCloseViewDoubtModal"></button>
+      </header>
+      <section class="modal-card-body p-5">
+        <div class="level is-mobile mb-3">
+          <div class="level-left">
+            <span class="tag is-info is-light" id="modalDoubtAuthor">Author</span>
+            <span class="mx-2">&middot;</span>
+            <span class="is-size-7 has-text-grey" id="modalDoubtDate">Date</span>
+          </div>
+          <div class="level-right">
+            <span class="tag is-warning is-light" id="modalDoubtStatusBadge">Unresolved</span>
+          </div>
+        </div>
+
+        <h3 class="title is-4 mb-3" id="modalDoubtTitle"></h3>
+        <div class="tags mb-3" id="modalDoubtTags"></div>
+        <div class="content mb-4" id="modalDoubtBody"></div>
+
+        <div class="level is-mobile mb-4 pb-3" style="border-bottom: 1px solid #edf2f7;">
+          <div class="level-left">
+            <button class="button is-small is-primary is-light" id="btnUpvoteDoubtModal">
+              <span class="icon is-small"><i class="fas fa-thumbs-up"></i></span>
+              <span>Upvote (<span id="modalDoubtUpvotesCount">0</span>)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Answers List -->
+        <h4 class="title is-6 mb-3">Answers & Community Solutions</h4>
+        <div id="modalAnswersList" class="mb-4">
+          <p class="has-text-grey is-italic is-size-7">No answers posted yet. Be the first to help!</p>
+        </div>
+
+        <!-- Post Answer Box -->
+        <div class="box has-background-white-bis p-4">
+          <h5 class="title is-6 mb-2">Write an Answer</h5>
+          <div class="field mb-2">
+            <div class="control">
+              <textarea class="textarea is-small" id="modalAnswerInput" rows="4" placeholder="Explain your logic or optimized approach... Markdown & Code supported."></textarea>
+            </div>
+          </div>
+          <button class="button is-primary is-small" id="btnSubmitAnswer">
+            <span>Post Answer</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODULE 1: COLLEGE-GATED AUTHENTICATION MODAL -->
+  <!-- ========================================== -->
+  <div class="modal" id="authModal">
+    <div class="modal-background" id="modalBg" onclick="closeAuthModal()"></div>
+    <div class="modal-card" style="max-width: 620px;">
+      
+      <header class="modal-card-head">
+        <p class="modal-card-title has-text-weight-bold">
+          <span class="icon mr-2 has-text-primary"><i class="fas fa-university"></i></span>
+          <span>College Student Portal</span>
+        </p>
+        <button class="delete" aria-label="close" id="btnCloseAuthModal" onclick="closeAuthModal()"></button>
+      </header>
+
+      <section class="modal-card-body p-5">
+        
+        <!-- Toggle Tabs -->
+        <div class="tabs is-toggle is-fullwidth mb-4" id="authTabs">
+          <ul>
+            <li class="is-active" id="tabRegister" onclick="switchAuthTab('register')"><a><span class="icon is-small"><i class="fas fa-user-plus"></i></span><span>Register Profile</span></a></li>
+            <li id="tabLogin" onclick="switchAuthTab('login')"><a><span class="icon is-small"><i class="fas fa-sign-in-alt"></i></span><span>Sign In</span></a></li>
+          </ul>
+        </div>
+
+        <!-- Registration Form (Module 1) -->
+        <form id="registerForm">
+          
+          <div class="field mb-3">
+            <label class="label">Full Name <span class="has-text-danger">*</span></label>
+            <div class="control has-icons-left">
+              <input class="input" type="text" id="regName" placeholder="e.g. Aarav Sharma" required />
+              <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
+            </div>
+          </div>
+
+          <div class="columns is-mobile mb-0">
+            <div class="column is-7">
+              <div class="field mb-3">
+                <label class="label">University Roll No <span class="has-text-danger">*</span></label>
+                <div class="control has-icons-left">
+                  <input class="input" type="text" id="regRoll" placeholder="2201010010045" maxlength="13" pattern="\d{13}" required />
+                  <span class="icon is-small is-left"><i class="fas fa-id-card"></i></span>
+                </div>
+                <p class="help has-text-grey">Must be 13 digits. First 2 digits auto-assign your academic year.</p>
+              </div>
+            </div>
+            <div class="column is-5">
+              <div class="field mb-3">
+                <label class="label">Branch <span class="has-text-danger">*</span></label>
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select id="regBranch">
+                      <option value="CSE">CSE</option>
+                      <option value="IT">IT</option>
+                      <option value="AI/DS">AI/DS</option>
+                      <option value="ECE">ECE</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field mb-3">
+            <label class="label">Email Address (Personal or College) <span class="has-text-danger">*</span></label>
+            <div class="control has-icons-left">
+              <input class="input" type="email" id="regEmail" placeholder="e.g. yourname@gmail.com" required />
+              <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
+            </div>
+            <p class="help has-text-grey">Personal (Gmail, Outlook) or college institutional emails are accepted.</p>
+          </div>
+
+          <div class="field mb-4">
+            <label class="label">Password <span class="has-text-danger">*</span></label>
+            <div class="control has-icons-left">
+              <input class="input" type="password" id="regPassword" placeholder="••••••••" minlength="6" required />
+              <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+            </div>
+            <p class="help has-text-grey">Minimum 6 characters. You can link your CP handles anytime in My Profile.</p>
+          </div>
+
+          <button type="submit" class="button is-primary is-fullwidth is-medium has-text-weight-semibold" id="btnSubmitRegister">
+            <span>Create Student Account</span>
+          </button>
+        </form>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="is-hidden">
+          <div class="field mb-3">
+            <label class="label">Email Address</label>
+            <div class="control has-icons-left">
+              <input class="input" type="email" id="loginEmail" placeholder="yourname@gmail.com" required />
+              <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
+            </div>
+          </div>
+
+          <div class="field mb-4">
+            <label class="label">Password</label>
+            <div class="control has-icons-left">
+              <input class="input" type="password" id="loginPassword" placeholder="••••••••" required />
+              <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+            </div>
+          </div>
+
+          <button type="submit" class="button is-primary is-fullwidth is-medium has-text-weight-semibold" id="btnSubmitLogin">
+            <span>Sign In</span>
+          </button>
+        </form>
+
+      </section>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- DEDICATED "MY PROFILE" MODAL               -->
+  <!-- ========================================== -->
+  <div class="modal" id="myProfileModal">
+    <div class="modal-background" id="modalProfileBg" onclick="closeMyProfileModal()"></div>
+    <div class="modal-card" style="max-width: 600px; width: 95%;">
+      <header class="modal-card-head has-background-white" style="border-bottom: 1px solid #edf2f7;">
+        <p class="modal-card-title is-size-5 has-text-weight-bold mb-0">
+          <span class="icon is-small mr-2 has-text-primary"><i class="fas fa-user-circle"></i></span>
+          My Profile & Settings
+        </p>
+        <button class="delete" aria-label="close" id="btnCloseProfileModal" onclick="closeMyProfileModal()"></button>
+      </header>
+
+      <section class="modal-card-body p-5" style="background: #f8fafc; max-height: 80vh; overflow-y: auto;">
+        
+        <!-- Profile Overview Card -->
+        <div class="box mb-4 p-4" style="background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%); border-left: 4px solid #485fc7;">
+          <div class="level is-mobile mb-0">
+            <div class="level-left">
+              <div>
+                <h3 class="title is-5 mb-1 has-text-dark" id="profileCardName">Student Name</h3>
+                <p class="subtitle is-7 mb-0 has-text-grey" id="profileCardEmail">email@domain.com</p>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="tags has-addons mb-0">
+                <span class="tag is-primary is-light" id="profileCardYear">Year —</span>
+                <span class="tag is-info is-light" id="profileCardBranch">CSE</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-2 pt-2" style="border-top: 1px dashed #cbd5e1;">
+            <span class="is-size-7 has-text-grey">
+              <span class="icon is-small mr-1"><i class="fas fa-id-card"></i></span>
+              Roll Number: <code id="profileCardRoll">—</code>
+            </span>
+          </div>
+        </div>
+
+        <!-- FORM A: Update Competitive Handles (Bulma Box Layout) -->
+        <div class="box mb-4 p-4 has-background-white" style="border: 1px solid #e2e8f0;">
+          <div class="level is-mobile mb-3">
+            <div class="level-left">
+              <h4 class="title is-6 mb-0 has-text-weight-bold has-text-dark">
+                <span class="icon is-small mr-2 has-text-link"><i class="fas fa-trophy"></i></span>
+                Form A: Competitive Programming Handles
+              </h4>
+            </div>
+          </div>
+          <p class="is-size-7 has-text-grey mb-3">
+            Link your usernames or profile URLs. Your rank, contest ratings, and solved question counts sync automatically.
+          </p>
+
+          <form id="profileHandlesForm">
+            <div class="field mb-3">
+              <label class="label is-small">LeetCode Username or URL</label>
+              <div class="control has-icons-left">
+                <input class="input is-small" type="text" id="profLeetCode" placeholder="e.g. saifullahjafri or https://leetcode.com/u/saifullahjafri/" />
+                <span class="icon is-small is-left has-text-warning"><i class="fas fa-code"></i></span>
+              </div>
+            </div>
+
+            <div class="field mb-3">
+              <label class="label is-small">Codeforces Handle or URL</label>
+              <div class="control has-icons-left">
+                <input class="input is-small" type="text" id="profCodeforces" placeholder="e.g. tourist or https://codeforces.com/profile/tourist" />
+                <span class="icon is-small is-left has-text-info"><i class="fas fa-chart-line"></i></span>
+              </div>
+            </div>
+
+            <div class="field mb-3">
+              <label class="label is-small">CodeChef Handle or URL</label>
+              <div class="control has-icons-left">
+                <input class="input is-small" type="text" id="profCodeChef" placeholder="e.g. gennady or https://www.codechef.com/users/gennady" />
+                <span class="icon is-small is-left" style="color: #b07d4b;"><i class="fas fa-utensils"></i></span>
+              </div>
+            </div>
+
+            <button type="submit" class="button is-primary is-small is-fullwidth has-text-weight-semibold" id="btnSaveHandles">
+              <span class="icon is-small"><i class="fas fa-save"></i></span>
+              <span>Save Handles & Sync Campus Standings</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- FORM B: Change Password (Bulma Box Layout with Re-Authentication) -->
+        <div class="box mb-0 p-4 has-background-white" style="border: 1px solid #e2e8f0;">
+          <div class="level is-mobile mb-3">
+            <div class="level-left">
+              <h4 class="title is-6 mb-0 has-text-weight-bold has-text-dark">
+                <span class="icon is-small mr-2 has-text-danger"><i class="fas fa-key"></i></span>
+                Form B: Change Password
+              </h4>
+            </div>
+          </div>
+          <p class="is-size-7 has-text-grey mb-3">
+            To update your password, verify your current password first for security.
+          </p>
+
+          <form id="profilePasswordForm">
+            <div class="field mb-3">
+              <label class="label is-small">Current Password <span class="has-text-danger">*</span></label>
+              <div class="control has-icons-left">
+                <input class="input is-small" type="password" id="profCurrentPassword" placeholder="••••••••" required />
+                <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+              </div>
+              <p class="help is-danger is-hidden" id="errCurrentPassword">Incorrect current password. Please try again.</p>
+            </div>
+
+            <div class="columns is-mobile mb-0">
+              <div class="column is-6">
+                <div class="field mb-3">
+                  <label class="label is-small">New Password <span class="has-text-danger">*</span></label>
+                  <div class="control has-icons-left">
+                    <input class="input is-small" type="password" id="profNewPassword" placeholder="••••••••" minlength="6" required />
+                    <span class="icon is-small is-left"><i class="fas fa-shield-alt"></i></span>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-6">
+                <div class="field mb-3">
+                  <label class="label is-small">Confirm New Password <span class="has-text-danger">*</span></label>
+                  <div class="control has-icons-left">
+                    <input class="input is-small" type="password" id="profConfirmPassword" placeholder="••••••••" minlength="6" required />
+                    <span class="icon is-small is-left"><i class="fas fa-check-double"></i></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="help is-danger is-hidden mb-2" id="errPasswordMismatch">New passwords do not match.</p>
+
+            <button type="submit" class="button is-warning is-small is-fullwidth has-text-weight-semibold" id="btnSavePassword">
+              <span class="icon is-small"><i class="fas fa-lock"></i></span>
+              <span>Update Password</span>
+            </button>
+          </form>
+        </div>
+
+      </section>
+    </div>
+  </div>
+
+  <!-- Client-Side App Controller Module -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

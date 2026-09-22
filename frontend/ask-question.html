@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ask a Question - College CP Doubt Resolution Forum</title>
+
+  <!-- 1. Bulma CSS Framework via CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
+
+  <!-- Font Awesome Icons for Bulma Controls -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- 2. Prism.js Dark Theme (Tomorrow Night) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- 3. Marked.js & Prism.js Core + Languages (C++, C, Python) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background-color: #f8fafc;
+    }
+    h1, h2, h3, .title, .navbar-brand {
+      font-family: 'Outfit', sans-serif;
+    }
+    pre, code, kbd, .textarea {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="has-background-light">
+
+  <!-- Main Bulma Navbar -->
+  <nav class="navbar is-white has-shadow mb-4" role="navigation" aria-label="main navigation">
+    <div class="container is-max-widescreen">
+      <div class="navbar-brand">
+        <a class="navbar-item has-text-weight-bold is-size-4 has-text-primary" href="index.html">
+          <span class="icon mr-2"><i class="fas fa-terminal"></i></span>
+          <span>CodeRank</span>
+          <span class="tag is-primary is-light is-rounded ml-2 is-size-7">Campus Hub</span>
+        </a>
+      </div>
+
+      <div class="navbar-menu is-active">
+        <div class="navbar-start">
+          <a class="navbar-item is-tab" href="index.html#leaderboard">
+            <span class="icon is-small mr-1"><i class="fas fa-trophy"></i></span>
+            <span>Leaderboards</span>
+          </a>
+          <a class="navbar-item is-tab" href="index.html#forum">
+            <span class="icon is-small mr-1"><i class="fas fa-comments"></i></span>
+            <span>Doubt Forum</span>
+          </a>
+          <a class="navbar-item is-tab is-active" href="ask-question.html">
+            <span class="icon is-small mr-1 has-text-primary"><i class="fas fa-plus-circle"></i></span>
+            <span>Ask a Question</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Bulma Section & Container -->
+  <section class="section py-3">
+    <div class="container is-max-widescreen">
+      
+      <!-- Top Breadcrumbs -->
+      <nav class="breadcrumb has-succeeds-separator mb-4" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <a href="index.html#leaderboard" class="has-text-grey">
+              <span class="icon is-small mr-1"><i class="fas fa-home"></i></span>
+              <span>Campus Hub</span>
+            </a>
+          </li>
+          <li>
+            <a href="index.html#forum" class="has-text-grey">
+              <span class="icon is-small mr-1"><i class="fas fa-comments"></i></span>
+              <span>Doubt Forum</span>
+            </a>
+          </li>
+          <li class="is-active">
+            <a href="#" aria-current="page" class="has-text-weight-bold has-text-primary">
+              <span class="icon is-small mr-1"><i class="fas fa-plus-circle"></i></span>
+              <span>Ask a Question</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Page Header -->
+      <div class="level mb-5">
+        <div class="level-left">
+          <div>
+            <h1 class="title is-3 has-text-weight-bold mb-1">
+              <span class="icon-text">
+                <span class="icon has-text-primary mr-2"><i class="fas fa-code-branch"></i></span>
+                <span>Ask a Doubt / Question</span>
+              </span>
+            </h1>
+            <p class="subtitle is-6 has-text-grey">
+              Submit your competitive programming questions, algorithmic bugs, or time-complexity bottlenecks to campus peers.
+            </p>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="tags has-addons">
+            <span class="tag is-dark">Editor</span>
+            <span class="tag is-primary is-light has-text-weight-semibold">
+              <span class="icon is-small mr-1"><i class="fas fa-bolt"></i></span> Live Split Preview
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Notification Message -->
+      <div id="statusNotification" class="notification is-hidden mb-5">
+        <button class="delete" id="closeNotificationBtn"></button>
+        <div class="icon-text">
+          <span class="icon mr-2" id="notificationIcon"><i class="fas fa-info-circle"></i></span>
+          <span id="notificationMessage" class="has-text-weight-medium"></span>
+        </div>
+      </div>
+
+      <!-- Split-Screen Grid Layout using Bulma Columns -->
+      <div class="columns is-desktop is-variable is-5">
+        
+        <!-- ========================================== -->
+        <!-- LEFT COLUMN: Input Form                    -->
+        <!-- ========================================== -->
+        <div class="column is-half">
+          <div class="box p-5 shadow-sm" style="border: 1px solid #e2e8f0; border-radius: 12px; height: 100%;">
+            
+            <div class="level is-mobile mb-4 pb-2" style="border-bottom: 1px solid #edf2f7;">
+              <div class="level-left">
+                <h2 class="title is-5 mb-0 has-text-grey-dark">
+                  <span class="icon is-small mr-1 has-text-info"><i class="fas fa-pen"></i></span> Question Editor
+                </h2>
+              </div>
+              <div class="level-right">
+                <span class="is-size-7 has-text-grey">* Required fields</span>
+              </div>
+            </div>
+
+            <form id="askQuestionForm" novalidate>
+              
+              <!-- 1. Title Input (input is-large) -->
+              <div class="field mb-4">
+                <label class="label is-medium" for="questionTitle">
+                  Question Title <span class="has-text-danger">*</span>
+                </label>
+                <div class="control has-icons-left">
+                  <input 
+                    class="input is-large" 
+                    type="text" 
+                    id="questionTitle" 
+                    name="title"
+                    placeholder="e.g. How to optimize 2D DP to 1D in 'Minimum Falling Path Sum' (LC 931)?" 
+                    required 
+                  />
+                  <span class="icon is-medium is-left has-text-grey">
+                    <i class="fas fa-heading"></i>
+                  </span>
+                </div>
+                <p class="help has-text-grey">Be specific with problem names, contest numbers, and specific error or TLE symptoms.</p>
+              </div>
+
+              <!-- 2. Tagging System (Bulma tags and tag components) -->
+              <div class="field mb-4">
+                <label class="label" for="tagInput">
+                  Tags <span class="has-text-danger">*</span>
+                </label>
+                <div class="control has-icons-left">
+                  <input 
+                    class="input" 
+                    type="text" 
+                    id="tagInput" 
+                    placeholder="Type a tag (e.g. C++, DP, LeetCode, Codeforces) and press Enter" 
+                  />
+                  <span class="icon is-small is-left has-text-grey">
+                    <i class="fas fa-tags"></i>
+                  </span>
+                </div>
+                <p class="help has-text-grey">Press <kbd class="tag is-light is-small">Enter</kbd> or <kbd class="tag is-light is-small">,</kbd> to add tag chips (up to 5 tags).</p>
+                
+                <!-- Tag Chips Container -->
+                <div id="tagsContainer" class="tags mt-3">
+                  <!-- Tag chips rendered here dynamically -->
+                </div>
+              </div>
+
+              <!-- 3. Markdown Body (Bulma textarea) -->
+              <div class="field mb-5">
+                <div class="level is-mobile mb-1">
+                  <div class="level-left">
+                    <label class="label mb-0" for="questionBody">
+                      Body & Code (Markdown) <span class="has-text-danger">*</span>
+                    </label>
+                  </div>
+                  <div class="level-right">
+                    <!-- Quick-Insert Markdown Helpers -->
+                    <div class="buttons are-small mb-0">
+                      <button type="button" class="button is-light is-small" id="btnSnippetCpp" title="Insert C++ Template">
+                        <span class="icon is-small has-text-info"><i class="fas fa-code"></i></span>
+                        <span>+ C++</span>
+                      </button>
+                      <button type="button" class="button is-light is-small" id="btnSnippetPy" title="Insert Python Template">
+                        <span class="icon is-small has-text-warning"><i class="fab fa-python"></i></span>
+                        <span>+ Python</span>
+                      </button>
+                      <button type="button" class="button is-light is-small" id="btnSnippetBold" title="Bold text">
+                        <span class="icon is-small"><i class="fas fa-bold"></i></span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="control">
+                  <textarea 
+                    class="textarea has-fixed-size" 
+                    id="questionBody" 
+                    rows="13" 
+                    placeholder="Explain your approach, the constraints, and paste your code snippet:
+
+### Problem Description
+I am trying to solve this using dynamic programming...
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int minFallingPathSum(vector<vector<int>>& matrix) {
+    // Current O(N^2) space solution
+    return 0;
+}
+```"
+                    required
+                  ></textarea>
+                </div>
+                <p class="help has-text-grey">Markdown is fully supported. Use triple backticks for code blocks.</p>
+              </div>
+
+              <!-- 4. Submit Action (button is-primary is-fullwidth) -->
+              <div class="field">
+                <div class="control">
+                  <button 
+                    type="submit" 
+                    id="submitQuestionBtn" 
+                    class="button is-primary is-fullwidth is-medium has-text-weight-semibold"
+                  >
+                    <span class="icon"><i class="fas fa-paper-plane"></i></span>
+                    <span>Post Question to Forum</span>
+                  </button>
+                </div>
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- RIGHT COLUMN: Published Forum Post Live Preview -->
+        <!-- ========================================== -->
+        <div class="column is-half">
+          <div class="card" style="border-radius: 12px; border: 1px solid #e2e8f0; height: 100%; display: flex; flex-direction: column;">
+            
+            <!-- Card Header -->
+            <header class="card-header has-background-white-bis" style="border-radius: 12px 12px 0 0;">
+              <p class="card-header-title has-text-grey-dark">
+                <span class="icon mr-2 has-text-primary"><i class="fas fa-eye"></i></span>
+                <span>Live Forum Post Preview</span>
+              </p>
+              <div class="card-header-icon">
+                <span class="tag is-success is-light is-rounded has-text-weight-medium">
+                  <span class="icon is-small mr-1"><i class="fas fa-sync-alt fa-spin"></i></span> Real-Time
+                </span>
+              </div>
+            </header>
+
+            <!-- Card Body / Content Wrapper -->
+            <div class="card-content flex-grow-1 p-5" style="display: flex; flex-direction: column; overflow-y: auto;">
+              
+              <!-- Author Meta & Status Badge -->
+              <div class="level is-mobile mb-4 pb-3" style="border-bottom: 1px solid #edf2f7;">
+                <div class="level-left">
+                  <div class="media" style="align-items: center;">
+                    <figure class="media-left mr-3 mb-0">
+                      <p class="image is-36x36">
+                        <img class="is-rounded" src="https://api.dicebear.com/7.x/bottts/svg?seed=PeerCoder" alt="Avatar" id="previewAvatar" />
+                      </p>
+                    </figure>
+                    <div class="media-content">
+                      <p class="is-size-6 has-text-weight-bold mb-0" id="previewAuthorName">You (Author)</p>
+                      <p class="is-size-7 has-text-grey mb-0">Just now &middot; Campus Hub</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="level-right">
+                  <span class="tag is-warning is-light has-text-weight-semibold mr-2">Unresolved</span>
+                  <span class="tag is-light has-text-grey-dark">
+                    <span class="icon is-small mr-1"><i class="fas fa-thumbs-up"></i></span> 0
+                  </span>
+                </div>
+              </div>
+
+              <!-- Question Title Preview -->
+              <h2 id="previewTitle" class="title is-4 mb-3 has-text-dark" style="word-break: break-word; line-height: 1.35;">
+                <span class="has-text-grey-light is-italic">Your question title will appear here...</span>
+              </h2>
+
+              <!-- Question Tags Preview -->
+              <div id="previewTags" class="tags mb-4">
+                <!-- Tag chips preview -->
+              </div>
+
+              <!-- Formatted Markdown Content Block (Bulma content class) -->
+              <div class="content flex-grow-1" id="previewContent" style="min-height: 250px; overflow-y: auto; max-height: 520px;">
+                <p class="has-text-grey-light is-italic">
+                  Start typing your doubt description and code on the left. The live formatted Markdown and syntax-highlighted code blocks will appear here automatically.
+                </p>
+              </div>
+
+            </div>
+
+            <!-- Card Footer / Helpful Tip -->
+            <footer class="card-footer has-background-white-bis px-4 py-3" style="border-radius: 0 0 12px 12px;">
+              <span class="is-size-7 has-text-grey">
+                <span class="icon is-small mr-1 has-text-info"><i class="fas fa-info-circle"></i></span>
+                Code syntax highlighting supports <code>C++</code>, <code>Python</code>, and <code>C</code>.
+              </span>
+            </footer>
+
+          </div>
+        </div>
+
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT: Logic & Firebase Integration   -->
+  <!-- ========================================== -->
+  <script type="module">
+    // -------------------------------------------------------------
+    // 1. Firebase Imports (Modular SDK v10 & Local Store Fallback)
+    // -------------------------------------------------------------
+    import { 
+      db, 
+      auth, 
+      collection, 
+      addDoc, 
+      serverTimestamp,
+      isMockMode,
+      MOCK_DOUBTS
+    } from "./js/firebase-config.js";
+
+    // -------------------------------------------------------------
+    // 2. DOM Element Selectors
+    // -------------------------------------------------------------
+    const form = document.getElementById("askQuestionForm");
+    const titleInput = document.getElementById("questionTitle");
+    const tagInput = document.getElementById("tagInput");
+    const tagsContainer = document.getElementById("tagsContainer");
+    const bodyTextarea = document.getElementById("questionBody");
+    const submitBtn = document.getElementById("submitQuestionBtn");
+
+    // Preview Pane Selectors
+    const previewTitle = document.getElementById("previewTitle");
+    const previewTags = document.getElementById("previewTags");
+    const previewContent = document.getElementById("previewContent");
+    const previewAuthorName = document.getElementById("previewAuthorName");
+    const previewAvatar = document.getElementById("previewAvatar");
+
+    // Notification Selectors
+    const statusNotification = document.getElementById("statusNotification");
+    const notificationMessage = document.getElementById("notificationMessage");
+    const closeNotificationBtn = document.getElementById("closeNotificationBtn");
+    const notificationIcon = document.getElementById("notificationIcon");
+
+    // Snippet Buttons
+    const btnSnippetCpp = document.getElementById("btnSnippetCpp");
+    const btnSnippetPy = document.getElementById("btnSnippetPy");
+    const btnSnippetBold = document.getElementById("btnSnippetBold");
+
+    // State
+    let tagsList = ["C++", "Competitive-Programming"];
+
+    // Update author preview if user is signed in
+    if (auth?.currentUser) {
+      previewAuthorName.textContent = auth.currentUser.displayName || auth.currentUser.email.split("@")[0];
+      if (auth.currentUser.photoURL) {
+        previewAvatar.src = auth.currentUser.photoURL;
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 3. Configure Marked.js with Prism Highlighting
+    // -------------------------------------------------------------
+    marked.setOptions({
+      breaks: true,
+      gfm: true,
+      highlight: function(code, lang) {
+        if (lang && Prism.languages[lang]) {
+          return Prism.highlight(code, Prism.languages[lang], lang);
+        }
+        return code;
+      }
+    });
+
+    // -------------------------------------------------------------
+    // 4. Tagging System Logic
+    // -------------------------------------------------------------
+    function renderTags() {
+      tagsContainer.innerHTML = "";
+      previewTags.innerHTML = "";
+
+      tagsList.forEach((tag, index) => {
+        const tagSpan = document.createElement("span");
+        tagSpan.className = "tag is-info is-medium is-light mr-2 mb-2";
+        tagSpan.innerHTML = `
+          <span>${escapeHtml(tag)}</span>
+          <button type="button" class="delete is-small" data-index="${index}" title="Remove tag"></button>
+        `;
+        tagsContainer.appendChild(tagSpan);
+
+        const previewTagSpan = document.createElement("span");
+        previewTagSpan.className = "tag is-info is-light";
+        previewTagSpan.textContent = tag;
+        previewTags.appendChild(previewTagSpan);
+      });
+    }
+
+    function addTag(rawValue) {
+      const cleanTag = rawValue.trim().replace(/^,+|,+$/g, "");
+      if (!cleanTag) return;
+
+      if (tagsList.length >= 5) {
+        showNotification("You can add a maximum of 5 tags.", "is-warning");
+        return;
+      }
+
+      if (!tagsList.some(t => t.toLowerCase() === cleanTag.toLowerCase())) {
+        tagsList.push(cleanTag);
+        renderTags();
+      }
+      tagInput.value = "";
+    }
+
+    tagInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === ",") {
+        e.preventDefault();
+        addTag(tagInput.value);
+      } else if (e.key === "Backspace" && tagInput.value === "" && tagsList.length > 0) {
+        tagsList.pop();
+        renderTags();
+      }
+    });
+
+    tagsContainer.addEventListener("click", (e) => {
+      if (e.target.classList.contains("delete")) {
+        const index = parseInt(e.target.dataset.index, 10);
+        tagsList.splice(index, 1);
+        renderTags();
+      }
+    });
+
+    // -------------------------------------------------------------
+    // 5. Live Split-Screen Preview Logic
+    // -------------------------------------------------------------
+    function updateLivePreview() {
+      const rawTitle = titleInput.value.trim();
+      if (rawTitle) {
+        previewTitle.textContent = rawTitle;
+      } else {
+        previewTitle.innerHTML = `<span class="has-text-grey-light is-italic">Your question title will appear here...</span>`;
+      }
+
+      const rawBody = bodyTextarea.value;
+      if (rawBody.trim()) {
+        const parsedHtml = marked.parse(rawBody);
+        previewContent.innerHTML = parsedHtml;
+        Prism.highlightAllUnder(previewContent);
+      } else {
+        previewContent.innerHTML = `
+          <p class="has-text-grey-light is-italic">
+            Start typing your doubt description and code on the left. The live formatted Markdown and syntax-highlighted code blocks will appear here automatically.
+          </p>`;
+      }
+    }
+
+    titleInput.addEventListener("input", updateLivePreview);
+    bodyTextarea.addEventListener("input", updateLivePreview);
+
+    // -------------------------------------------------------------
+    // 6. Snippet Helper Buttons
+    // -------------------------------------------------------------
+    function insertSnippet(codeSnippet) {
+      const start = bodyTextarea.selectionStart;
+      const end = bodyTextarea.selectionEnd;
+      const text = bodyTextarea.value;
+      bodyTextarea.value = text.substring(0, start) + codeSnippet + text.substring(end);
+      bodyTextarea.focus();
+      bodyTextarea.selectionStart = bodyTextarea.selectionEnd = start + codeSnippet.length;
+      updateLivePreview();
+    }
+
+    btnSnippetCpp.addEventListener("click", () => {
+      insertSnippet("\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios_base::sync_with_stdio(false);\n    cin.tie(NULL);\n    // Your solution\n    return 0;\n}\n```\n");
+    });
+
+    btnSnippetPy.addEventListener("click", () => {
+      insertSnippet("\n```python\nimport sys\n\ndef solve():\n    # Your solution\n    pass\n\nif __name__ == '__main__':\n    solve()\n```\n");
+    });
+
+    btnSnippetBold.addEventListener("click", () => {
+      insertSnippet("**bold text**");
+    });
+
+    // -------------------------------------------------------------
+    // 7. Notification Helpers
+    // -------------------------------------------------------------
+    function showNotification(message, type = "is-danger") {
+      statusNotification.className = `notification ${type} mb-5`;
+      notificationMessage.textContent = message;
+      
+      if (type === "is-success") {
+        notificationIcon.innerHTML = `<i class="fas fa-check-circle"></i>`;
+      } else if (type === "is-warning") {
+        notificationIcon.innerHTML = `<i class="fas fa-exclamation-triangle"></i>`;
+      } else {
+        notificationIcon.innerHTML = `<i class="fas fa-exclamation-circle"></i>`;
+      }
+
+      statusNotification.classList.remove("is-hidden");
+      statusNotification.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    closeNotificationBtn.addEventListener("click", () => {
+      statusNotification.classList.add("is-hidden");
+    });
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // -------------------------------------------------------------
+    // 8. Firebase Submission Logic
+    // -------------------------------------------------------------
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const title = titleInput.value.trim();
+      const markdownBody = bodyTextarea.value.trim();
+
+      if (!title) {
+        showNotification("Please enter a question title.", "is-danger");
+        titleInput.focus();
+        return;
+      }
+
+      if (tagsList.length === 0) {
+        showNotification("Please add at least one relevant tag (e.g. C++, DP).", "is-warning");
+        tagInput.focus();
+        return;
+      }
+
+      if (!markdownBody) {
+        showNotification("Please write your problem details in the body.", "is-danger");
+        bodyTextarea.focus();
+        return;
+      }
+
+      submitBtn.classList.add("is-loading");
+      submitBtn.disabled = true;
+      statusNotification.classList.add("is-hidden");
+
+      try {
+        let storedUser = null;
+        try {
+          const raw = localStorage.getItem("coderank_user");
+          if (raw) storedUser = JSON.parse(raw);
+        } catch (e) {}
+
+        const authorUid = storedUser?.uid || auth?.currentUser?.uid || "student_guest_" + Math.floor(Math.random() * 10000);
+        const authorName = storedUser?.fullName || auth?.currentUser?.displayName || auth?.currentUser?.email?.split("@")[0] || "Student";
+
+        const questionPayload = {
+          authorUid: authorUid,
+          authorName: authorName,
+          title: title,
+          markdownBody: markdownBody,
+          tags: [...tagsList],
+          timestamp: serverTimestamp ? serverTimestamp() : Date.now(),
+          upvotes: 0,
+          isResolved: false
+        };
+
+        // 1. Post to Express + MongoDB backend API
+        const apiBase = window.location.origin.includes(':5001') ? `${window.location.origin}/api` : 'http://localhost:5001/api';
+        try {
+          await fetch(`${apiBase}/doubts`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title,
+              markdownBody,
+              tags: [...tagsList],
+              authorUid,
+              authorName
+            })
+          });
+        } catch (apiErr) {
+          console.warn("Backend doubts write note:", apiErr.message);
+        }
+
+        if (db && !isMockMode) {
+          await addDoc(collection(db, "doubts"), questionPayload);
+        } else {
+          MOCK_DOUBTS.unshift({
+            id: "doubt_" + Date.now(),
+            ...questionPayload,
+            created_at: Date.now()
+          });
+        }
+
+        showNotification("🎉 Your question has been published! Redirecting to Doubt Forum...", "is-success");
+
+        form.reset();
+        tagsList = ["C++"];
+        renderTags();
+        updateLivePreview();
+
+        setTimeout(() => {
+          window.location.href = "index.html#forum";
+        }, 1200);
+
+      } catch (error) {
+        console.error("Firestore write failed:", error);
+        showNotification(`Failed to publish question: ${error.message || "Network error"}`, "is-danger");
+      } finally {
+        submitBtn.classList.remove("is-loading");
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Initial render
+    renderTags();
+    updateLivePreview();
+  </script>
+
+</body>
+</html>

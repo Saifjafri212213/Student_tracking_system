@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Student Portal &middot; CodeRank Authentication</title>
+  <meta name="description" content="Sign in or register for your official university competitive programming profile on CodeRank." />
+
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Bulma CSS Framework via CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
+
+  <!-- Custom Stylesheets (Design System & Auth Portal) -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body class="auth-body">
+  <!-- Ambient Background Glows -->
+  <div class="glow-sphere auth-glow-1"></div>
+  <div class="glow-sphere auth-glow-2"></div>
+
+  <!-- Main Split-Screen Container -->
+  <div class="auth-split-wrapper">
+    
+    <!-- ======================================================== -->
+    <!-- LEFT PANEL: UNIVERSITY & CP BRANDING HERO                -->
+    <!-- ======================================================== -->
+    <div class="auth-branding-panel">
+      <div class="branding-header mb-4">
+        <a href="index.html" class="brand-logo is-flex is-align-items-center">
+          <div class="logo-icon mr-3">⚡</div>
+          <div class="brand-text">
+            <span class="brand-title">CodeRank</span>
+            <span class="brand-subtitle">University CP Hub</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="branding-hero-content">
+        <div class="badge-campus-tag mb-3">
+          <span class="icon is-small mr-1"><i class="fas fa-graduation-cap"></i></span>
+          <span>Official University Student Portal</span>
+        </div>
+        
+        <h1 class="branding-title mb-3">
+          Accelerate Your Competitive Programming Journey.
+        </h1>
+        
+        <p class="branding-desc mb-4">
+          Connect your LeetCode, Codeforces, and CodeChef handles to compete on campus-wide leaderboards, track contest rating deltas, and resolve coding doubts with peers.
+        </p>
+
+        <!-- Floating Code Terminal Graphic -->
+        <div class="code-terminal-card mb-4">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <span class="terminal-title">campus_rank_sync.js</span>
+            <span class="terminal-badge">LIVE CRON</span>
+          </div>
+          <pre class="terminal-body"><code><span class="c-keyword">async function</span> <span class="c-func">syncStudentCP</span>(rollNumber) {
+  <span class="c-comment">// Verified university domain</span>
+  <span class="c-keyword">const</span> handles = <span class="c-keyword">await</span> db.getHandles(rollNumber);
+  
+  <span class="c-keyword">const</span> stats = <span class="c-keyword">await</span> Promise.all([
+    fetchLeetCode(handles.leetcode),
+    fetchCodeforces(handles.codeforces),
+    fetchCodeChef(handles.codechef)
+  ]);
+  
+  <span class="c-keyword">return</span> updateLeaderboards(stats);
+}</code></pre>
+        </div>
+
+        <!-- Feature Highlights Grid -->
+        <div class="branding-features-grid mb-3">
+          <div class="feature-item">
+            <span class="icon has-text-warning"><i class="fas fa-trophy"></i></span>
+            <strong>Isolated Rankings</strong>
+            <small>LC, CF &amp; CodeChef</small>
+          </div>
+          <div class="feature-item">
+            <span class="icon has-text-info"><i class="fas fa-bolt"></i></span>
+            <strong>Hourly Sync</strong>
+            <small>Node.js cron workers</small>
+          </div>
+          <div class="feature-item">
+            <span class="icon has-text-primary"><i class="fas fa-comments"></i></span>
+            <strong>Doubt Forum</strong>
+            <small>Syntax highlighted Q&amp;A</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="branding-footer">
+        <span>&copy; 2026 University CP Club &middot; Restrictive Campus Access</span>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- RIGHT PANEL: AUTHENTICATION FORM CARD                    -->
+    <!-- ======================================================== -->
+    <div class="auth-form-panel">
+      <div class="auth-card">
+        
+        <!-- Toggle Tabs (Sign In / Register) -->
+        <div class="auth-tabs-toggle mb-4">
+          <button class="auth-tab-btn active" id="tab-login" type="button">
+            <span class="icon is-small mr-1"><i class="fas fa-sign-in-alt"></i></span>
+            <span>Sign In</span>
+          </button>
+          <button class="auth-tab-btn" id="tab-register" type="button">
+            <span class="icon is-small mr-1"><i class="fas fa-user-plus"></i></span>
+            <span>Register New Student</span>
+          </button>
+        </div>
+
+        <!-- Notification Alert Box -->
+        <div class="auth-alert hidden" id="auth-alert-box">
+          <span class="alert-icon" id="alert-icon"><i class="fas fa-exclamation-triangle"></i></span>
+          <span class="alert-message" id="alert-message">Error message</span>
+        </div>
+
+        <!-- ==================================================== -->
+        <!-- FORM 1: LOGIN FORM                                   -->
+        <!-- ==================================================== -->
+        <form id="form-login" class="auth-form active">
+          <div class="form-header-group mb-2">
+            <h2>Welcome Back</h2>
+            <p>Sign in using your registered college or personal email.</p>
+          </div>
+
+          <!-- Email Field -->
+          <div class="form-group">
+            <label for="login-email">Email Address</label>
+            <div class="input-with-icon">
+              <span class="input-icon"><i class="fas fa-envelope"></i></span>
+              <input type="email" id="login-email" class="form-control" placeholder="student@college.ac.in or name@gmail.com" required autocomplete="email" />
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="form-group">
+            <div class="label-row">
+              <label for="login-password">Password</label>
+              <button type="button" class="btn-text forgot-pwd-link" id="btn-forgot-password">Forgot Password?</button>
+            </div>
+            <div class="input-with-icon">
+              <span class="input-icon"><i class="fas fa-lock"></i></span>
+              <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password" />
+              <button type="button" class="toggle-password-btn" data-target="login-password" aria-label="Toggle password visibility">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn-primary btn-block auth-submit-btn" id="btn-login-submit">
+            <span class="btn-spinner hidden mr-2"></span>
+            <span>Sign In to CodeRank</span>
+            <span class="icon is-small ml-1"><i class="fas fa-arrow-right"></i></span>
+          </button>
+
+          <!-- Form Switch Prompt -->
+          <div class="form-switch-prompt mt-2">
+            <span>New student on campus?</span>
+            <button type="button" class="btn-text" id="btn-switch-to-register">Create an account</button>
+          </div>
+        </form>
+
+        <!-- ==================================================== -->
+        <!-- FORM 2: REGISTRATION FORM                            -->
+        <!-- ==================================================== -->
+        <form id="form-register" class="auth-form">
+          <div class="form-header-group mb-2">
+            <h2>Create Student Account</h2>
+            <p>Register with your 13-digit university roll number.</p>
+          </div>
+
+          <!-- Full Name -->
+          <div class="form-group">
+            <label for="reg-name">Full Name</label>
+            <div class="input-with-icon">
+              <span class="input-icon"><i class="fas fa-user"></i></span>
+              <input type="text" id="reg-name" class="form-control" placeholder="e.g. Aarav Sharma" required autocomplete="name" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <!-- University Roll Number -->
+            <div class="form-group">
+              <label for="reg-roll">
+                University Roll No. <span class="req-badge">13-digit AKTU</span>
+              </label>
+              <div class="input-with-icon">
+                <span class="input-icon"><i class="fas fa-id-card"></i></span>
+                <input type="text" id="reg-roll" class="form-control" placeholder="2100910100045" maxlength="13" required />
+              </div>
+              <small class="field-hint" id="roll-hint">Exact 13-digit numeric university roll code.</small>
+            </div>
+
+            <!-- Email Address -->
+            <div class="form-group">
+              <label for="reg-email">
+                Email Address <span class="req-badge">Personal or College</span>
+              </label>
+              <div class="input-with-icon">
+                <span class="input-icon"><i class="fas fa-envelope"></i></span>
+                <input type="email" id="reg-email" class="form-control" placeholder="yourname@gmail.com" required autocomplete="email" />
+              </div>
+              <small class="field-hint" id="email-hint">Personal or institutional emails accepted.</small>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label for="reg-password">Password (Minimum 6 characters)</label>
+            <div class="input-with-icon">
+              <span class="input-icon"><i class="fas fa-lock"></i></span>
+              <input type="password" id="reg-password" class="form-control" placeholder="Create a secure password" minlength="6" required autocomplete="new-password" />
+              <button type="button" class="toggle-password-btn" data-target="reg-password" aria-label="Toggle password visibility">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Platform Handles Section -->
+          <div class="handles-fieldset">
+            <span class="fieldset-legend">Competitive Programming Handles (Optional)</span>
+
+            <div class="platform-reg-row">
+              <div class="platform-chip chip-lc">
+                <span class="chip-badge">LeetCode</span>
+                <input type="text" id="reg-handle-lc" class="form-control form-control-sm" placeholder="LeetCode username (e.g. aarav_cp)" />
+              </div>
+
+              <div class="platform-chip chip-cf">
+                <span class="chip-badge">Codeforces</span>
+                <input type="text" id="reg-handle-cf" class="form-control form-control-sm" placeholder="Codeforces handle (e.g. tourist)" />
+              </div>
+
+              <div class="platform-chip chip-cc">
+                <span class="chip-badge">CodeChef</span>
+                <input type="text" id="reg-handle-cc" class="form-control form-control-sm" placeholder="CodeChef username (e.g. chef_legend)" />
+              </div>
+            </div>
+            <small class="handles-help-text">⚡ Handles are immediately queued for background stats polling.</small>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn-primary btn-block auth-submit-btn" id="btn-register-submit">
+            <span class="btn-spinner hidden mr-2"></span>
+            <span>Complete Registration</span>
+            <span class="icon is-small ml-1"><i class="fas fa-user-check"></i></span>
+          </button>
+
+          <!-- Form Switch Prompt -->
+          <div class="form-switch-prompt mt-2">
+            <span>Already registered?</span>
+            <button type="button" class="btn-text" id="btn-switch-to-login">Sign in here</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- FORGOT PASSWORD MODAL                                    -->
+  <!-- ======================================================== -->
+  <div class="modal-overlay hidden" id="modal-forgot-pwd">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="is-size-5 has-text-weight-bold has-text-white">
+          <span class="icon mr-2 has-text-primary"><i class="fas fa-key"></i></span>
+          Reset Password
+        </h2>
+        <button class="modal-close-btn" id="btn-close-forgot-modal" type="button">&times;</button>
+      </div>
+      <form id="form-forgot-pwd">
+        <p class="modal-info-text">
+          Enter your registered email address. Firebase will send a password reset link to your inbox.
+        </p>
+        <div class="form-group mb-4">
+          <label for="forgot-email">Email Address</label>
+          <div class="input-with-icon">
+            <span class="input-icon"><i class="fas fa-envelope"></i></span>
+            <input type="email" id="forgot-email" class="form-control" placeholder="student@college.ac.in" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-forgot">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-forgot">
+            <span>Send Reset Link</span>
+            <span class="icon is-small ml-1"><i class="fas fa-paper-plane"></i></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase Modular SDK & Auth Script -->
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/auth-page.js"></script>
+</body>
+</html>

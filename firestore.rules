@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isCollegeEmail() {
+      return isAuthenticated() && 
+        (request.auth.token.email.matches('.*@college\\.ac\\.in$') || 
+         request.auth.token.email.matches('.*@aktu\\.ac\\.in$'));
+    }
+
+    // --- Users Collection ---
+    match /users/{userId} {
+      allow read: if true; // Public leaderboard profiles
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    // --- Dedicated Platform Leaderboard Collections ---
+    match /leaderboard_leetcode/{userId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /leaderboard_codeforces/{userId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /leaderboard_codechef/{userId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // --- Doubt Resolution Forum ---
+    match /doubts/{doubtId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && request.resource.data.author_id == request.auth.uid;
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated() && resource.data.author_id == request.auth.uid;
+
+      // Answers Subcollection
+      match /answers/{answerId} {
+        allow read: if true;
+        allow create: if isAuthenticated() && request.resource.data.author_id == request.auth.uid;
+        allow update: if isAuthenticated();
+        allow delete: if isAuthenticated() && resource.data.author_id == request.auth.uid;
+      }
+    }
+
+    // --- Platform Sync Metadata ---
+    match /sync_metadata/{platform} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+  }
+}
