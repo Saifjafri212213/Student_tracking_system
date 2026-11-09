@@ -12,7 +12,7 @@ export async function connectDB() {
   const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/coderank';
 
   try {
-    console.log('🔄 [MongoDB] Connecting to MongoDB Atlas...');
+    console.log('🔄 [MongoDB] Connecting to MongoDB...');
     const conn = await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 5000,
       autoIndex: true

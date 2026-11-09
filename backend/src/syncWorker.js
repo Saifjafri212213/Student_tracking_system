@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import admin from 'firebase-admin';
 import fs from 'fs';
-import { config } from './config.js';
+import { config } from './config/config.js';
 import { fetchLeetCodeStats } from './fetchers/leetcode.js';
 import { fetchCodeforcesStats } from './fetchers/codeforces.js';
 import { fetchCodeChefStats } from './fetchers/codechef.js';

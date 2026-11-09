@@ -1,6 +1,6 @@
 import { Leaderboard } from './models/Leaderboard.js';
 import { Doubt } from './models/Doubt.js';
-import { isDbConnected } from './db.js';
+import { isDbConnected } from './config/db.js';
 
 export const INITIAL_LEADERBOARD_SEED = {
   leetcode: [
@@ -260,16 +260,14 @@ export async function seedInitialDataIfEmpty() {
   if (!isDbConnected()) return;
 
   try {
-    const count = await Leaderboard.countDocuments();
-    if (count === 0) {
-      console.log('🌱 [MongoDB] Seeding initial campus coding leaderboard data...');
-      const records = [
-        ...INITIAL_LEADERBOARD_SEED.leetcode,
-        ...INITIAL_LEADERBOARD_SEED.codeforces,
-        ...INITIAL_LEADERBOARD_SEED.codechef
-      ];
-      await Leaderboard.insertMany(records);
-      console.log(`✅ [MongoDB] Inserted ${records.length} initial student standings.`);
+    for (const plat of ['leetcode', 'codeforces', 'codechef']) {
+      const list = INITIAL_LEADERBOARD_SEED[plat] || [];
+      for (const item of list) {
+        const exists = await Leaderboard.findOne({ platform: plat, rollNumber: item.rollNumber });
+        if (!exists) {
+          await Leaderboard.create({ ...item, platform: plat });
+        }
+      }
     }
 
     const doubtsCount = await Doubt.countDocuments();

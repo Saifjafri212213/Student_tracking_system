@@ -4,6 +4,8 @@ dotenv.config();
 export const config = {
   port: process.env.PORT || 5001,
   firebaseCredentialsPath: process.env.FIREBASE_CREDENTIALS_PATH || './serviceAccountKey.json',
+  jwtSecret: process.env.JWT_SECRET || 'coderank_jwt_default_secret_key_2026',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   
   // Independent Cron Schedules for Fault Isolation
   cronSchedules: {
