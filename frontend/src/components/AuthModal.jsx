@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Lock, Mail, User, Hash, School, KeyRound, AlertCircle, CheckCircle2, Sparkles, ArrowRight, Calendar } from 'lucide-react';
+import { X, Lock, Mail, User, Hash, School, KeyRound, AlertCircle, CheckCircle2, Sparkles, ArrowRight, Calendar, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { AKTU_CSE_BRANCHES } from '../data/branches';
 
@@ -16,8 +16,8 @@ function calculateAge(dobString) {
 }
 
 export function AuthModal({ isOpen, onClose, initialMode = 'login', onSuccess }) {
-  const { login, register } = useAuth();
-  const [mode, setMode] = useState(initialMode); // 'login' or 'register'
+  const { login, register, resetPassword } = useAuth();
+  const [mode, setMode] = useState(initialMode); // 'login' | 'register' | 'forgot'
 
   useEffect(() => {
     if (isOpen) {
@@ -29,6 +29,12 @@ export function AuthModal({ isOpen, onClose, initialMode = 'login', onSuccess })
   // Login fields
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+
+  // Forgot password fields
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotRollNumber, setForgotRollNumber] = useState('');
+  const [forgotNewPassword, setForgotNewPassword] = useState('');
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState('');
 
   // Register fields
   const [fullName, setFullName] = useState('');
@@ -79,6 +85,42 @@ export function AuthModal({ isOpen, onClose, initialMode = 'login', onSuccess })
       }, 700);
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotSubmit = async (e) => {
+    e.preventDefault();
+    if (forgotRollNumber && forgotRollNumber.length !== 13) {
+      setError('College Roll Number must be exactly 13 digits (e.g. 2200000000099).');
+      return;
+    }
+    if (forgotNewPassword.length < 6) {
+      setError('New password must be at least 6 characters.');
+      return;
+    }
+    if (forgotNewPassword !== forgotConfirmPassword) {
+      setError('New passwords do not match. Please verify.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      await resetPassword({
+        email: forgotEmail.trim(),
+        rollNumber: forgotRollNumber.trim(),
+        newPassword: forgotNewPassword,
+      });
+      setSuccessMsg('Password updated! Signed in successfully.');
+      setTimeout(() => {
+        onClose();
+        onSuccess?.();
+        setSuccessMsg(null);
+      }, 700);
+    } catch (err) {
+      setError(err.message || 'Password reset failed. Please check your email and roll number.');
     } finally {
       setLoading(false);
     }
@@ -139,38 +181,49 @@ export function AuthModal({ isOpen, onClose, initialMode = 'login', onSuccess })
       >
         {/* Header Tabs */}
         <div className="px-6 py-4 border-b border-[#202735] flex items-center justify-between bg-[#080b12]/60">
-          <div className="flex items-center p-1 rounded-xl bg-[#080b12] border border-[#202735] text-xs relative">
+          {mode === 'forgot' ? (
             <button
+              type="button"
               onClick={() => { setMode('login'); setError(null); }}
-              className={`relative z-10 px-4 py-1.5 rounded-lg font-semibold tracking-wide transition-colors duration-200 ${
-                mode === 'login' ? 'text-white' : 'text-[#99a4b7] hover:text-white'
-              }`}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#99a4b7] hover:text-white bg-[#080b12] border border-[#202735] hover:border-slate-700 transition"
             >
-              Sign In
-              {mode === 'login' && (
-                <motion.div
-                  layoutId="authTabSlider"
-                  className="absolute inset-0 bg-[#1e273a] rounded-lg border border-[#32405d] shadow-sm -z-10"
-                  transition={{ type: 'spring', stiffness: 450, damping: 30 }}
-                />
-              )}
+              <ArrowLeft className="w-3.5 h-3.5 text-amber-400" />
+              <span>Back to Sign In</span>
             </button>
-            <button
-              onClick={() => { setMode('register'); setError(null); }}
-              className={`relative z-10 px-4 py-1.5 rounded-lg font-semibold tracking-wide transition-colors duration-200 ${
-                mode === 'register' ? 'text-white' : 'text-[#99a4b7] hover:text-white'
-              }`}
-            >
-              Create Account
-              {mode === 'register' && (
-                <motion.div
-                  layoutId="authTabSlider"
-                  className="absolute inset-0 bg-[#1e273a] rounded-lg border border-[#32405d] shadow-sm -z-10"
-                  transition={{ type: 'spring', stiffness: 450, damping: 30 }}
-                />
-              )}
-            </button>
-          </div>
+          ) : (
+            <div className="flex items-center p-1 rounded-xl bg-[#080b12] border border-[#202735] text-xs relative">
+              <button
+                onClick={() => { setMode('login'); setError(null); }}
+                className={`relative z-10 px-4 py-1.5 rounded-lg font-semibold tracking-wide transition-colors duration-200 ${
+                  mode === 'login' ? 'text-white' : 'text-[#99a4b7] hover:text-white'
+                }`}
+              >
+                Sign In
+                {mode === 'login' && (
+                  <motion.div
+                    layoutId="authTabSlider"
+                    className="absolute inset-0 bg-[#1e273a] rounded-lg border border-[#32405d] shadow-sm -z-10"
+                    transition={{ type: 'spring', stiffness: 450, damping: 30 }}
+                  />
+                )}
+              </button>
+              <button
+                onClick={() => { setMode('register'); setError(null); }}
+                className={`relative z-10 px-4 py-1.5 rounded-lg font-semibold tracking-wide transition-colors duration-200 ${
+                  mode === 'register' ? 'text-white' : 'text-[#99a4b7] hover:text-white'
+                }`}
+              >
+                Create Account
+                {mode === 'register' && (
+                  <motion.div
+                    layoutId="authTabSlider"
+                    className="absolute inset-0 bg-[#1e273a] rounded-lg border border-[#32405d] shadow-sm -z-10"
+                    transition={{ type: 'spring', stiffness: 450, damping: 30 }}
+                  />
+                )}
+              </button>
+            </div>
+          )}
 
           <motion.button
             onClick={onClose}
@@ -198,7 +251,112 @@ export function AuthModal({ isOpen, onClose, initialMode = 'login', onSuccess })
             </div>
           )}
 
-          {mode === 'login' ? (
+          {mode === 'forgot' ? (
+            /* Forgot Password Form */
+            <form onSubmit={handleForgotSubmit} className="space-y-4">
+              <div className="p-3.5 rounded-xl bg-[#121826] border border-[#222d42]">
+                <div className="flex items-center space-x-2 text-amber-400 font-semibold text-xs mb-1">
+                  <KeyRound className="w-4 h-4" />
+                  <span>Student Identity Verification</span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Verify your registered College Email and 13-digit AKTU Roll Number to set a new password.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Registered College Email *
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                  <input
+                    type="email"
+                    required
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    placeholder="student@college.edu"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500 transition"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  13-Digit College Roll Number *
+                </label>
+                <div className="relative">
+                  <Hash className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                  <input
+                    type="text"
+                    required
+                    maxLength={13}
+                    value={forgotRollNumber}
+                    onChange={(e) => setForgotRollNumber(e.target.value.replace(/\D/g, ''))}
+                    placeholder="2200000000099"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono transition"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  New Password * (min 6 characters)
+                </label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={forgotNewPassword}
+                    onChange={(e) => setForgotNewPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500 transition"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Confirm New Password *
+                </label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={forgotConfirmPassword}
+                    onChange={(e) => setForgotConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500 transition"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full flex items-center justify-center space-x-2 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition transform active:scale-95 disabled:opacity-50"
+                >
+                  <KeyRound className="w-4 h-4" />
+                  <span>{loading ? 'Verifying & Resetting...' : 'Reset Password & Sign In'}</span>
+                </button>
+              </div>
+
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setMode('login'); setError(null); }}
+                  className="text-xs text-slate-400 hover:text-white transition"
+                >
+                  Remembered your password? <span className="text-amber-400 hover:underline">Sign In</span>
+                </button>
+              </div>
+            </form>
+          ) : mode === 'login' ? (
             /* Sign In Form */
             <form onSubmit={handleLoginSubmit} className="space-y-4">
               <div>
@@ -219,9 +377,22 @@ export function AuthModal({ isOpen, onClose, initialMode = 'login', onSuccess })
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Password
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Password
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotEmail(loginEmail);
+                      setMode('forgot');
+                      setError(null);
+                    }}
+                    className="text-xs text-amber-400 hover:text-amber-300 hover:underline transition font-medium focus:outline-none"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
                 <div className="relative">
                   <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
                   <input

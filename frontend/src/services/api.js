@@ -105,6 +105,15 @@ export const api = {
     return handleResponse(res);
   },
 
+  async resetPassword({ email, rollNumber, newPassword }) {
+    const res = await fetch(`${API_BASE}/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, rollNumber, newPassword }),
+    });
+    return handleResponse(res);
+  },
+
   async getMe() {
     const res = await fetch(`${API_BASE}/auth/me`, {
       headers: getHeaders(),

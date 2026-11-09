@@ -417,4 +417,64 @@ export async function updateProfile(req, res) {
   }
 }
 
+export async function resetForgotPassword(req, res) {
+  const { email, rollNumber, newPassword } = req.body;
+
+  if (!email || !newPassword) {
+    return res.status(400).json({ error: 'Please provide both college email and new password.' });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ error: 'New password must be at least 6 characters long.' });
+  }
+
+  const cleanEmail = email.toLowerCase().trim();
+
+  try {
+    let user = null;
+    if (isDbConnected()) {
+      user = await User.findOne({ email: cleanEmail });
+    } else if (IN_MEMORY_USERS.has(cleanEmail)) {
+      user = IN_MEMORY_USERS.get(cleanEmail);
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: 'No student account found with this email address.' });
+    }
+
+    // If roll number provided, verify it matches
+    if (rollNumber && user.rollNumber) {
+      if (user.rollNumber.trim() !== rollNumber.trim()) {
+        return res.status(400).json({ error: 'Roll number does not match our records for this account.' });
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    if (isDbConnected()) {
+      user.password = hashedPassword;
+      await user.save();
+    }
+
+    if (IN_MEMORY_USERS.has(cleanEmail)) {
+      const memUser = IN_MEMORY_USERS.get(cleanEmail);
+      memUser.password = hashedPassword;
+      IN_MEMORY_USERS.set(cleanEmail, memUser);
+    }
+
+    // Auto-login after password reset
+    const token = generateToken(user);
+
+    return res.json({
+      message: 'Password reset successfully! Logged in.',
+      token,
+      user: sanitizeUser(user)
+    });
+  } catch (err) {
+    console.error('[ResetForgotPassword] Error:', err.message);
+    return res.status(500).json({ error: 'Failed to reset password. Please try again.' });
+  }
+}
+
+
 

@@ -5,7 +5,8 @@ import {
   getMe, 
   changePassword, 
   updateHandles,
-  updateProfile
+  updateProfile,
+  resetForgotPassword
 } from '../controllers/authController.js';
 import { authenticateJWT } from '../middleware/auth.js';
 
@@ -13,6 +14,7 @@ const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
+router.post('/forgot-password', resetForgotPassword);
 router.get('/me', authenticateJWT, getMe);
 router.put('/profile', authenticateJWT, updateProfile);
 router.post('/profile', authenticateJWT, updateProfile);
