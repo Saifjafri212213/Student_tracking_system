@@ -179,18 +179,6 @@ Builds the optimized production assets into `frontend/dist/`, which are automati
 
 ---
 
-## 🔑 Demo Credentials
-
-To test the system immediately, use the pre-seeded demo accounts:
-
-| Name | College Email | Password | Branch | Role / Tier |
-| :--- | :--- | :--- | :--- | :--- |
-| **Aarav Sharma** | `aarav@college.edu` | `Password@123` | CSE | Year 4 &middot; Grandmaster |
-| **Priya Patel** | `priya@college.edu` | `Password@123` | CSE | Year 3 &middot; Knight |
-| **Rohan Verma** | `rohan@college.edu` | `Password@123` | IT | Year 3 &middot; Specialist |
-
----
-
 ## 🛠️ Tech Stack
 
 - **Frontend**: React 18, Vite 5, Tailwind CSS, Framer Motion, Lucide Icons

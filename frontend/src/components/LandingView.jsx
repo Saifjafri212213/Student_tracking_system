@@ -186,7 +186,7 @@ export function LandingView({ user, isAuthenticated, onOpenAuth, onExploreLeader
                     </div>
                   </div>
 
-                  {/* Mini Leaderboard Podium Rows */}
+                  {/* Mini Leaderboard Podium Preview */}
                   <div className="space-y-2 pt-1">
                     <div className="flex items-center justify-between p-2 rounded-xl bg-[#0f1422] border border-amber-500/30">
                       <div className="flex items-center space-x-2.5">
@@ -194,13 +194,13 @@ export function LandingView({ user, isAuthenticated, onOpenAuth, onExploreLeader
                           1
                         </span>
                         <div>
-                          <div className="text-xs font-bold text-white font-display">Aarav Sharma</div>
-                          <div className="text-[10px] text-slate-400 font-mono">CSE &middot; Yr 4</div>
+                          <div className="text-xs font-bold text-white font-display">Campus Rank #1</div>
+                          <div className="text-[10px] text-slate-400 font-mono">Gold Tier Leader</div>
                         </div>
                       </div>
                       <div className="text-right">
                         <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-medium">
-                          Knight 2180
+                          Top Rating
                         </span>
                       </div>
                     </div>
@@ -211,13 +211,13 @@ export function LandingView({ user, isAuthenticated, onOpenAuth, onExploreLeader
                           2
                         </span>
                         <div>
-                          <div className="text-xs font-bold text-white font-display">Priya Patel</div>
-                          <div className="text-[10px] text-slate-400 font-mono">CSE &middot; Yr 3</div>
+                          <div className="text-xs font-bold text-white font-display">Campus Rank #2</div>
+                          <div className="text-[10px] text-slate-400 font-mono">Silver Contender</div>
                         </div>
                       </div>
                       <div className="text-right">
                         <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/40 text-slate-300 border border-slate-600/30 font-medium">
-                          1980 Rating
+                          Active Rank
                         </span>
                       </div>
                     </div>
@@ -228,13 +228,13 @@ export function LandingView({ user, isAuthenticated, onOpenAuth, onExploreLeader
                           3
                         </span>
                         <div>
-                          <div className="text-xs font-bold text-white font-display">Rohan Verma</div>
-                          <div className="text-[10px] text-slate-400 font-mono">IT &middot; Yr 3</div>
+                          <div className="text-xs font-bold text-white font-display">Campus Rank #3</div>
+                          <div className="text-[10px] text-slate-400 font-mono">Bronze Contender</div>
                         </div>
                       </div>
                       <div className="text-right">
                         <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/40 text-slate-300 border border-slate-600/30 font-medium">
-                          1890 Rating
+                          Active Rank
                         </span>
                       </div>
                     </div>

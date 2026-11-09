@@ -39,15 +39,8 @@ export async function getLeaderboard(req, res) {
         .lean();
     }
 
-    // Seamless in-memory fallback if MongoDB is in offline mode
-    if (!records || records.length === 0) {
-      const baseSeed = INITIAL_LEADERBOARD_SEED[platform] || [];
-      records = baseSeed.filter(r => {
-        if (yearQuery !== 'ALL' && r.academicYear !== parseInt(yearQuery, 10)) return false;
-        if (branch !== 'ALL' && r.branch !== branch) return false;
-        return true;
-      });
-      records.sort((a, b) => (b[sortField] || 0) - (a[sortField] || 0));
+    if (!records) {
+      records = [];
     }
 
     // Attach ranks

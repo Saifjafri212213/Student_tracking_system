@@ -123,13 +123,6 @@ export function AuthModal({ isOpen, onClose, initialMode = 'login', onSuccess })
     }
   };
 
-  // Demo user fast fill
-  const fillDemo = (email, pass) => {
-    setLoginEmail(email);
-    setLoginPassword(pass);
-    setError(null);
-  };
-
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -239,29 +232,6 @@ export function AuthModal({ isOpen, onClose, initialMode = 'login', onSuccess })
                     placeholder="••••••••"
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500 transition"
                   />
-                </div>
-              </div>
-
-              {/* Demo Accounts Quick-Fill Helper */}
-              <div className="pt-2">
-                <span className="text-[11px] text-slate-400 block mb-1.5 font-medium">
-                  Instant Test Accounts (bcrypt verified):
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => fillDemo('aarav@college.edu', 'Password@123')}
-                    className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-amber-500/40 text-[11px] text-slate-300 transition"
-                  >
-                    👤 Aarav (Grandmaster)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => fillDemo('saif@college.edu', 'SecretPassword123')}
-                    className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-amber-500/40 text-[11px] text-slate-300 transition"
-                  >
-                    👤 Saif Jafri
-                  </button>
                 </div>
               </div>
 
