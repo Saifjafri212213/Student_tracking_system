@@ -321,7 +321,13 @@ export function LeaderboardView() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, staggerChildren: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2"
+          className={`grid grid-cols-1 ${
+            top3.length === 1 
+              ? 'max-w-md mx-auto' 
+              : top3.length === 2 
+              ? 'md:grid-cols-2 max-w-2xl mx-auto' 
+              : 'md:grid-cols-3'
+          } gap-5 pt-2`}
         >
           {/* 2nd Place */}
           {top3[1] && (
