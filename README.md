@@ -1,6 +1,10 @@
 # CodeRank &middot; Campus Competitive Programming Hub
 
-A modern, full-stack campus competitive programming platform featuring platform-isolated leaderboards for **LeetCode**, **Codeforces**, and **CodeChef**, a **CSES Practice Arena**, and **Live Contest Schedules**. Built with **React**, **Vite**, **Tailwind CSS**, **Framer Motion**, **Node.js / Express**, and **MongoDB**.
+A modern, full-stack campus competitive programming platform featuring platform-isolated leaderboards for **LeetCode**, **Codeforces**, and **CodeChef**, a **CSES Practice Arena**, and **Live Contest Schedules**. Built with **React**, **Vite**, **Tailwind CSS**, **Framer Motion**, **Node.js / Express**, and **MongoDB Atlas**.
+
+- 🌐 **Live Frontend (Vercel)**: [https://frontend-mocha-three-82.vercel.app](https://frontend-mocha-three-82.vercel.app)
+- 🚀 **Live Backend (Render)**: [https://coderank-backend-c7sa.onrender.com](https://coderank-backend-c7sa.onrender.com)
+- 🗄️ **Database**: MongoDB Atlas Cloud (`cluster0.3tjg2lg.mongodb.net/coderank`)
 
 ---
 
